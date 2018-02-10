@@ -1,9 +1,11 @@
 var cos = Math.cos
   , sin = Math.sin
 
-function guilloche(theta, scale, R, r, p, t, f) {
-  // R *= Math.sqrt(Math.abs(Math.cos(1*theta)) + t)
-  // r *= Math.sqrt(Math.abs(Math.cos(1*theta)) + t)
+function guilloche(theta, scale, R, r, p, t, f, lemniscate) {
+  if (lemniscate) {
+    R *= Math.sqrt(Math.abs(Math.cos(1*theta)) + t)
+    r *= Math.sqrt(Math.abs(Math.cos(1*theta)) + t)
+  }
 
   var x = (R + r)* Math.cos(theta) + (r+p) * Math.cos(((R+r)/r)*theta)*f
   var y = (R + r)* Math.sin(theta) - (r+p) * Math.sin(((R+r)/r)*theta)*f
