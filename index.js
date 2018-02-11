@@ -1,7 +1,14 @@
 var cos = Math.cos
   , sin = Math.sin
 
-function guilloche(theta, scale, R, r, p, t, f, lemniscate) {
+function guilloche(theta, options, lemniscate) {
+  var scale = options.scale
+  var R = options.R
+  var r = options.r
+  var p = options.p
+  var t = options.lem_t
+  var f = options.f
+
   if (lemniscate) {
     R *= Math.sqrt(Math.abs(Math.cos(1*theta)) + t)
     r *= Math.sqrt(Math.abs(Math.cos(1*theta)) + t)
@@ -11,9 +18,6 @@ function guilloche(theta, scale, R, r, p, t, f, lemniscate) {
   var y = (R + r)* Math.sin(theta) - (r+p) * Math.sin(((R+r)/r)*theta)*f
   x *= scale
   y *= scale
-  // y *= .5
-  // y *= Math.cos(theta) * r2
-  // x *= Math.sin(theta) * r2
 
   return {x:y, y:x}
 }
