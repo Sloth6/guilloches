@@ -6,7 +6,6 @@ var canvas = document.createElement('canvas')
 
 
 var state = { t: 0 }
-var duration = 2000
 
 document.body.style.background = '#000'
 document.body.style.margin = '0'
@@ -14,8 +13,10 @@ document.body.style.padding = '0'
 document.body.appendChild(canvas)
 
 var options = {
+  'selected': 'State A',
   'animate':false,
   'lemniscate': false,
+  'duration': 2000,
   'steps': 1000,
   'state_a':{
     'R': 200,
@@ -33,7 +34,7 @@ var options = {
     'p': 10,
     'lemn_t': 1,
     'f': 70,
-    'scale': .75,
+    'scale': .4,
     // 'lem_t': 1.0,
   }
 }
@@ -43,13 +44,20 @@ var original_options = Object.assign({}, original_options);
 
 url_options = JSON.parse(getParameterByName('options'))
 if (url_options) {
-  options = url_options
+  console.log(url_options)
+  for (key in url_options) {
+    options[key] = url_options[key]
+  }
   console.log('Options found in URL')
 }
 
 gui.add(options, 'animate').onChange(on_update)
+
 // gui.add(options, 'lemniscate').onChange(on_update)
+gui.add(options, 'selected', ['State A', 'State B'] );
 gui.add(options, 'steps', 200, 10000).step(10).onChange(on_update)
+gui.add(options, 'duration', 200, 5000).step(25).onChange(on_update)
+
 var fa = gui.addFolder('State A')
 var fb = gui.addFolder('State B')
 
@@ -74,7 +82,8 @@ gui.add(obj,'reset');
 
 function on_update() {
   var query_string = encodeURIComponent(JSON.stringify(options))
-  window.history.replaceState( {} , '/', '/?options='+query_string );
+  var base = window.location.href.split('?')[0]
+  window.history.replaceState( {} , '', base+'?options='+query_string );
   draw()
 }
 
@@ -103,7 +112,11 @@ function draw() {
       current[property] = t*options.state_a[property] + (1-t)*options.state_b[property]
     } 
   } else {
-    var current = options.state_a
+    if (options.selected == 'State A'){
+      var current = options.state_a
+    } else {
+      var current = options.state_b
+    }
   }
   
   p = guilloche(0, current, options.lemniscate)
@@ -125,7 +138,7 @@ function animate(time) {
 requestAnimationFrame(animate);
 
 var tween = new TWEEN.Tween(state)
-  .to({t:1.0}, duration)
+  .to({t:1.0}, options.duration)
   .easing(TWEEN.Easing.Quadratic.InOut)
   .onUpdate(function() { draw() })
   .repeat(Infinity)
