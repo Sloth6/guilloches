@@ -39,7 +39,6 @@ var options = {
   }
 }
 
-
 var original_options = Object.assign({}, original_options);
 
 url_options = JSON.parse(getParameterByName('options'))
@@ -56,7 +55,7 @@ gui.add(options, 'animate').onChange(on_update)
 // gui.add(options, 'lemniscate').onChange(on_update)
 gui.add(options, 'selected', ['State A', 'State B'] );
 gui.add(options, 'steps', 200, 10000).step(10).onChange(on_update)
-gui.add(options, 'duration', 200, 5000).step(25).onChange(on_update)
+gui.add(options, 'duration', 200, 4000).step(25).onChange(restart_teen)
 
 var fa = gui.addFolder('State A')
 var fb = gui.addFolder('State B')
@@ -130,20 +129,29 @@ function draw() {
   ctx.stroke()
   ctx.restore()
 }
+var tween = null
+
+function restart_teen() {
+  if (tween) {
+    tween.stop()
+  }
+  state.t = 0
+  tween = new TWEEN.Tween(state)
+    .to({t:1.0}, options.duration)
+    .easing(TWEEN.Easing.Quadratic.InOut)
+    .onUpdate(function() { draw() })
+    .repeat(Infinity)
+    .yoyo( true )
+    .start();
+}
+
+restart_teen()
 
 function animate(time) {
   requestAnimationFrame(animate);
   TWEEN.update(time);
 }
 requestAnimationFrame(animate);
-
-var tween = new TWEEN.Tween(state)
-  .to({t:1.0}, options.duration)
-  .easing(TWEEN.Easing.Quadratic.InOut)
-  .onUpdate(function() { draw() })
-  .repeat(Infinity)
-  .yoyo( true )
-  .start();
 
 function resize() {
   width = canvas.width = window.innerWidth
